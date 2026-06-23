@@ -43,6 +43,14 @@ class BleScannerService:
 
             self._last_seen_by_device[event.device_address] = now
 
+            logger.info(
+                "BLE mac=%s name=%s rssi=%s uuids=%s",
+                event.device_address,
+                event.local_name,
+                event.rssi,
+                event.service_uuids,
+            )
+
             try:
                 self._queue.put_nowait(event)
             except asyncio.QueueFull:
