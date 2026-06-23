@@ -1,0 +1,13 @@
+[Unit]
+Description=BLE Hub API
+After=network.target bluetooth.service
+
+[Service]
+WorkingDirectory=/opt/ble-hub/backend
+EnvironmentFile=/opt/ble-hub/backend/.env
+ExecStart=/opt/ble-hub/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=BLE Hub Scanner
+After=bluetooth.service
+
+[Service]
+WorkingDirectory=/opt/ble-hub/backend
+EnvironmentFile=/opt/ble-hub/backend/.env
+ExecStart=/opt/ble-hub/backend/.venv/bin/python scripts/run_scanner.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
