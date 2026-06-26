@@ -39,3 +39,15 @@ export type BeaconStatus = {
   status?: string;
   payload?: Record<string, unknown> | null;
 };
+
+export type RuleTrigger = {
+  id: number;
+  rule_id: number;
+  rule_name: string;
+  device_address: string;
+  local_name?: string;
+  rssi?: number;
+  actions: any[];
+  payload: any;
+  created_at: string;
+};

@@ -6,6 +6,7 @@ import { DevicesPage } from "./pages/DevicesPage";
 import { EventsPage } from "./pages/EventsPage";
 import { RulesPage } from "./pages/RulesPage";
 import { BeaconPage } from "./pages/BeaconPage";
+import { RuleTriggersPage } from "./pages/RuleTriggersPage";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/beacon" element={<BeaconPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/triggers" element={<RuleTriggersPage />} />
       </Routes>
     </AppLayout>
   );

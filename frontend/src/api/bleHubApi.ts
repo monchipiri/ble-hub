@@ -45,3 +45,16 @@ export async function stopBeacon(): Promise<BeaconStatus> {
   const response = await api.post<BeaconStatus>("/beacon/stop");
   return response.data;
 }
+
+export async function getRuleTriggers(limit = 100) {
+    const response = await api.get(
+        "/rule-triggers",
+        {
+            params: {
+                limit
+            }
+        }
+    )
+
+    return response.data
+}

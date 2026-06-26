@@ -10,7 +10,8 @@ const links = [
   { to: "/devices", label: "Dispositivos", icon: Bluetooth },
   { to: "/events", label: "Eventos", icon: Database },
   { to: "/rules", label: "Reglas", icon: Settings },
-  { to: "/beacon", label: "Baliza", icon: Radio }
+  { to: "/beacon", label: "Baliza", icon: Radio },
+  { to: "/triggers", label: "Actividad", icon: Activity }
 ];
 
 export function AppLayout({ children }: AppLayoutProps) {

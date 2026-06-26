@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import Boolean, DateTime, Float, Integer, JSON, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Column, DateTime, Integer, JSON, String
 
 
 class Base(DeclarativeBase):
@@ -49,3 +50,16 @@ class Rule(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
+
+class RuleTrigger(Base):
+    __tablename__ = "rule_triggers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    rule_id = Column(Integer, index=True, nullable=False)
+    rule_name = Column(String, nullable=False)
+    device_address = Column(String, index=True, nullable=False)
+    local_name = Column(String, nullable=True)
+    rssi = Column(Integer, nullable=True)
+    actions = Column(JSON, nullable=False, default=list)
+    payload = Column(JSON, nullable=False, default=dict)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

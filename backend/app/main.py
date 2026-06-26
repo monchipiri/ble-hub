@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import beacon, devices, events, health, rules
+from app.api.routes import beacon, devices, events, health, rules, rule_triggers
 from app.db.init_db import init_db
 
 
@@ -33,3 +33,4 @@ app.include_router(devices.router)
 app.include_router(events.router)
 app.include_router(rules.router)
 app.include_router(beacon.router)
+app.include_router(rule_triggers.router)
