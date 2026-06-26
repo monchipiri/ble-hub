@@ -1,4 +1,8 @@
-export interface Device {
+export type HealthResponse = {
+  status: string;
+};
+
+export type BleDevice = {
   id: number;
   address: string;
   name?: string | null;
@@ -7,9 +11,9 @@ export interface Device {
   last_rssi?: number | null;
   last_seen_at?: string | null;
   created_at?: string | null;
-}
+};
 
-export interface BleEvent {
+export type BleEvent = {
   id: number;
   source: string;
   device_address: string;
@@ -19,17 +23,19 @@ export interface BleEvent {
   manufacturer_data?: Record<string, unknown> | null;
   payload?: Record<string, unknown> | null;
   created_at?: string | null;
-}
+};
 
-export interface Rule {
+export type Rule = {
   id: number;
   name: string;
   enabled: boolean;
   conditions: Record<string, unknown>;
   actions: Array<Record<string, unknown>>;
   created_at?: string | null;
-}
+};
 
-export interface HealthResponse {
-  status: string;
-}
+export type BeaconStatus = {
+  running?: boolean;
+  status?: string;
+  payload?: Record<string, unknown> | null;
+};

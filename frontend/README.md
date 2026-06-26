@@ -1,32 +1,19 @@
-# BLE Hub Frontend MVP
+# BLE Hub Frontend
 
-Frontend inicial para BLE Hub con React + Vite + TypeScript.
+Frontend MVP para BLE Hub usando React, Vite y TypeScript.
 
-## Instalación
+## Arranque
 
 ```bash
-cd frontend
 cp .env.example .env
 npm install
 npm run dev
 ```
 
-Por defecto espera la API en:
+Abrir:
 
 ```text
-http://localhost:8000
+http://localhost:5173
 ```
 
-Si la API está en otra máquina:
-
-```env
-VITE_API_BASE_URL=http://IP_RASPBERRY:8000
-```
-
-## Vistas
-
-- Dashboard
-- Devices
-- Events
-- Rules
-
+La API debe estar disponible en `VITE_API_BASE_URL`.

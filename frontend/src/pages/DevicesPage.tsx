@@ -1,32 +1,46 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../api/client';
-import { DataTable } from '../components/DataTable';
-import type { Device } from '../types/ble';
+import { useQuery } from "@tanstack/react-query";
+
+import { getDevices } from "../api/bleHubApi";
+import { DataState } from "../components/DataState";
 
 export function DevicesPage() {
-  const query = useQuery({ queryKey: ['devices'], queryFn: api.devices, refetchInterval: 3000 });
+  const query = useQuery({ queryKey: ["devices"], queryFn: getDevices });
 
   return (
-    <div className="page">
+    <section>
       <div className="page-header">
         <div>
-          <h1>Dispositivos</h1>
-          <p>Últimos dispositivos BLE detectados por la Raspberry.</p>
+          <h2>Dispositivos</h2>
+          <p>Dispositivos BLE detectados y último estado conocido.</p>
         </div>
       </div>
 
-      {query.isError && <div className="error-box">Error cargando dispositivos: {(query.error as Error).message}</div>}
-
-      <DataTable<Device>
-        rows={query.data ?? []}
-        emptyMessage="No hay dispositivos detectados."
-        columns={[
-          { key: 'address', header: 'MAC', render: (row) => <code>{row.address}</code> },
-          { key: 'name', header: 'Nombre', render: (row) => row.name || '-' },
-          { key: 'rssi', header: 'RSSI', render: (row) => row.last_rssi ?? '-' },
-          { key: 'last_seen_at', header: 'Última vez', render: (row) => row.last_seen_at ? new Date(row.last_seen_at).toLocaleString() : '-' },
-        ]}
-      />
-    </div>
+      <DataState isLoading={query.isLoading} error={query.error} empty={!query.data?.length}>
+        <div className="panel">
+          <table>
+            <thead>
+              <tr>
+                <th>MAC</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>RSSI</th>
+                <th>Última detección</th>
+              </tr>
+            </thead>
+            <tbody>
+              {query.data?.map((device) => (
+                <tr key={device.id}>
+                  <td className="mono">{device.address}</td>
+                  <td>{device.name ?? "-"}</td>
+                  <td>{device.device_type ?? "-"}</td>
+                  <td>{device.last_rssi ?? "-"}</td>
+                  <td>{device.last_seen_at ? new Date(device.last_seen_at).toLocaleString() : "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DataState>
+    </section>
   );
 }

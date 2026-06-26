@@ -1,34 +1,46 @@
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../api/client';
-import { DataTable } from '../components/DataTable';
-import { JsonBlock } from '../components/JsonBlock';
-import type { BleEvent } from '../types/ble';
+import { useQuery } from "@tanstack/react-query";
+
+import { getEvents } from "../api/bleHubApi";
+import { DataState } from "../components/DataState";
+import { JsonBlock } from "../components/JsonBlock";
 
 export function EventsPage() {
-  const query = useQuery({ queryKey: ['events', 100], queryFn: () => api.events(100), refetchInterval: 3000 });
+  const query = useQuery({ queryKey: ["events", 100], queryFn: () => getEvents(100) });
 
   return (
-    <div className="page">
+    <section>
       <div className="page-header">
         <div>
-          <h1>Eventos</h1>
-          <p>Últimos anuncios BLE registrados.</p>
+          <h2>Eventos</h2>
+          <p>Últimos anuncios BLE registrados en PostgreSQL.</p>
         </div>
       </div>
 
-      {query.isError && <div className="error-box">Error cargando eventos: {(query.error as Error).message}</div>}
-
-      <DataTable<BleEvent>
-        rows={query.data ?? []}
-        emptyMessage="No hay eventos registrados."
-        columns={[
-          { key: 'created_at', header: 'Fecha', render: (row) => row.created_at ? new Date(row.created_at).toLocaleString() : '-' },
-          { key: 'device_address', header: 'MAC', render: (row) => <code>{row.device_address}</code> },
-          { key: 'local_name', header: 'Nombre', render: (row) => row.local_name || '-' },
-          { key: 'rssi', header: 'RSSI', render: (row) => row.rssi ?? '-' },
-          { key: 'payload', header: 'Payload', render: (row) => <JsonBlock value={row.payload} /> },
-        ]}
-      />
-    </div>
+      <DataState isLoading={query.isLoading} error={query.error} empty={!query.data?.length}>
+        <div className="cards-list">
+          {query.data?.map((event) => (
+            <article className="event-card" key={event.id}>
+              <header>
+                <div>
+                  <strong className="mono">{event.device_address}</strong>
+                  <p>{event.local_name ?? "Sin nombre"}</p>
+                </div>
+                <span className="badge">RSSI {event.rssi ?? "-"}</span>
+              </header>
+              <div className="event-meta">
+                {event.created_at ? new Date(event.created_at).toLocaleString() : "-"}
+              </div>
+              <JsonBlock
+                value={{
+                  service_uuids: event.service_uuids,
+                  manufacturer_data: event.manufacturer_data,
+                  payload: event.payload
+                }}
+              />
+            </article>
+          ))}
+        </div>
+      </DataState>
+    </section>
   );
 }
