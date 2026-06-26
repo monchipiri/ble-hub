@@ -9,13 +9,8 @@ from app.db.init_db import init_db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Inicialización
     await init_db()
-
     yield
-
-    # Aquí en el futuro podremos cerrar conexiones,
-    # workers, beacon, etc.
 
 
 app = FastAPI(
@@ -25,13 +20,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# --------------------------------------------------------------------
-# CORS
-# --------------------------------------------------------------------
-# Durante el desarrollo dejamos acceso libre.
-# En producción se restringirá únicamente al frontend autorizado.
-# --------------------------------------------------------------------
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,12 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --------------------------------------------------------------------
-# API
-# --------------------------------------------------------------------
-
-app.include_router(health.router, tags=["Health"])
-app.include_router(devices.router, prefix="/devices", tags=["Devices"])
-app.include_router(events.router, prefix="/events", tags=["Events"])
-app.include_router(rules.router, prefix="/rules", tags=["Rules"])
-app.include_router(beacon.router, prefix="/beacon", tags=["Beacon"])
+app.include_router(health.router)
+app.include_router(devices.router)
+app.include_router(events.router)
+app.include_router(rules.router)
+app.include_router(beacon.router)
