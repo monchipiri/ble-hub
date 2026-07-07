@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getDevices, getEvents, getHealth, getRules } from "../api/bleHubApi";
 import { DataState } from "../components/DataState";
 import { StatCard } from "../components/StatCard";
+import { formatDateTime, formatRssi } from "../utils/format";
 
 export function DashboardPage() {
   const health = useQuery({ queryKey: ["health"], queryFn: getHealth });
@@ -28,7 +29,11 @@ export function DashboardPage() {
         <div className="stats-grid">
           <StatCard label="Dispositivos" value={devices.data?.length ?? 0} hint="Detectados por el scanner" />
           <StatCard label="Eventos recientes" value={events.data?.length ?? 0} hint="Última consulta" />
-          <StatCard label="Reglas" value={rules.data?.length ?? 0} hint="Configuradas en backend" />
+          <StatCard
+            label="Reglas activas"
+            value={(rules.data ?? []).filter((rule) => rule.enabled).length}
+            hint={`${rules.data?.length ?? 0} configuradas`}
+          />
           <StatCard label="API" value={health.data?.status ?? "-"} hint="Estado de FastAPI" />
         </div>
 
@@ -48,8 +53,8 @@ export function DashboardPage() {
                 <tr key={device.id}>
                   <td className="mono">{device.address}</td>
                   <td>{device.name ?? "-"}</td>
-                  <td>{device.last_rssi ?? "-"}</td>
-                  <td>{device.last_seen_at ? new Date(device.last_seen_at).toLocaleString() : "-"}</td>
+                  <td>{formatRssi(device.last_rssi)}</td>
+                  <td>{formatDateTime(device.last_seen_at)}</td>
                 </tr>
               ))}
             </tbody>

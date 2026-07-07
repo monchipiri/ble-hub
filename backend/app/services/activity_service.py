@@ -1,10 +1,13 @@
-from sqlalchemy.dialects.postgresql import insert
 from datetime import datetime, timezone
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.ble.models import BleAdvertisementEvent
 from app.db.models import BleEvent, Device
 
 
-async def store_ble_event(session, event) -> None:
+async def store_ble_event(session: AsyncSession, event: BleAdvertisementEvent) -> BleEvent:
     now = datetime.now(timezone.utc)
 
     db_event = BleEvent(
@@ -19,20 +22,26 @@ async def store_ble_event(session, event) -> None:
     )
     session.add(db_event)
 
-    stmt = insert(Device).values(
-        address=event.device_address,
-        name=event.local_name,
-        last_rssi=event.rssi,
-        last_seen_at=now,
-        created_at=now,
-    ).on_conflict_do_update(
-        index_elements=["address"],
-        set_={
-            "name": event.local_name,
-            "last_rssi": event.rssi,
-            "last_seen_at": now,
-        },
-    )
+    if not event.device_address:
+        return db_event
 
-    await session.execute(stmt)
-    await session.commit()
+    result = await session.execute(select(Device).where(Device.address == event.device_address))
+    device = result.scalar_one_or_none()
+
+    if device is None:
+        session.add(
+            Device(
+                address=event.device_address,
+                name=event.local_name,
+                last_rssi=event.rssi,
+                last_seen_at=now,
+                created_at=now,
+            )
+        )
+    else:
+        if event.local_name:
+            device.name = event.local_name
+        device.last_rssi = event.rssi
+        device.last_seen_at = now
+
+    return db_event

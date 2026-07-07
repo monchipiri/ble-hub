@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getDevices } from "../api/bleHubApi";
 import { DataState } from "../components/DataState";
+import { formatDateTime, formatRssi } from "../utils/format";
 
 export function DevicesPage() {
   const query = useQuery({ queryKey: ["devices"], queryFn: getDevices });
@@ -33,8 +34,8 @@ export function DevicesPage() {
                   <td className="mono">{device.address}</td>
                   <td>{device.name ?? "-"}</td>
                   <td>{device.device_type ?? "-"}</td>
-                  <td>{device.last_rssi ?? "-"}</td>
-                  <td>{device.last_seen_at ? new Date(device.last_seen_at).toLocaleString() : "-"}</td>
+                  <td>{formatRssi(device.last_rssi)}</td>
+                  <td>{formatDateTime(device.last_seen_at)}</td>
                 </tr>
               ))}
             </tbody>

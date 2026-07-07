@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getEvents } from "../api/bleHubApi";
 import { DataState } from "../components/DataState";
 import { JsonBlock } from "../components/JsonBlock";
+import { formatDateTime, formatRssi } from "../utils/format";
 
 export function EventsPage() {
   const query = useQuery({ queryKey: ["events", 100], queryFn: () => getEvents(100) });
@@ -22,14 +23,12 @@ export function EventsPage() {
             <article className="event-card" key={event.id}>
               <header>
                 <div>
-                  <strong className="mono">{event.device_address}</strong>
+                  <strong className="mono">{event.device_address ?? "Sin MAC"}</strong>
                   <p>{event.local_name ?? "Sin nombre"}</p>
                 </div>
-                <span className="badge">RSSI {event.rssi ?? "-"}</span>
+                <span className="badge">RSSI {formatRssi(event.rssi)}</span>
               </header>
-              <div className="event-meta">
-                {event.created_at ? new Date(event.created_at).toLocaleString() : "-"}
-              </div>
+              <div className="event-meta">{formatDateTime(event.created_at)}</div>
               <JsonBlock
                 value={{
                   service_uuids: event.service_uuids,

@@ -6,8 +6,8 @@ Frontend MVP para BLE Hub usando React, Vite y TypeScript.
 
 ```bash
 cp .env.example .env
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Abrir:

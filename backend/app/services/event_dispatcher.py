@@ -14,16 +14,22 @@ logger = logging.getLogger(__name__)
 
 
 async def dispatch_ble_event(event: BleAdvertisementEvent) -> None:
+    actions_to_run: list[tuple[str, dict]] = []
+
     async with AsyncSessionLocal() as session:
         await store_ble_event(session, event)
 
-        result = await session.execute(
-            select(Rule).where(Rule.enabled.is_(True))
-        )
+        result = await session.execute(select(Rule).where(Rule.enabled.is_(True)))
         rules = result.scalars().all()
 
         for rule in rules:
-            if not event_matches_conditions(event, rule.conditions):
+            try:
+                matches = event_matches_conditions(event, rule.conditions)
+            except Exception:
+                logger.exception("error evaluating rule id=%s name=%s", rule.id, rule.name)
+                continue
+
+            if not matches:
                 continue
 
             logger.warning(
@@ -52,14 +58,29 @@ async def dispatch_ble_event(event: BleAdvertisementEvent) -> None:
             session.add(trigger)
 
             for action_config in rule.actions:
-                action_type = action_config.get("type")
-                params = action_config.get("params", {})
-
-                action = ACTION_REGISTRY.get(action_type)
-                if not action:
-                    logger.warning("unknown action type=%s", action_type)
+                if not isinstance(action_config, dict):
+                    logger.warning("invalid action config rule=%s action=%s", rule.name, action_config)
                     continue
 
-                await action.execute(event, params)
+                action_type = action_config.get("type")
+                params = action_config.get("params", {})
+                if not isinstance(action_type, str):
+                    logger.warning("missing action type rule=%s action=%s", rule.name, action_config)
+                    continue
+                if not isinstance(params, dict):
+                    params = {}
+
+                actions_to_run.append((action_type, params))
 
         await session.commit()
+
+    for action_type, params in actions_to_run:
+        action = ACTION_REGISTRY.get(action_type)
+        if not action:
+            logger.warning("unknown action type=%s", action_type)
+            continue
+
+        try:
+            await action.execute(event, params)
+        except Exception:
+            logger.exception("error executing action type=%s", action_type)

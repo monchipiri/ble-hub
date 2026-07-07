@@ -4,14 +4,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import beacon, devices, events, health, rules, rule_triggers
+from app.core.config import get_settings
 from app.db.init_db import init_db
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     await init_db()
     yield
 
+
+settings = get_settings()
 
 app = FastAPI(
     title="BLE Hub API",
@@ -22,7 +25,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

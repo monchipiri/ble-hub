@@ -1,5 +1,12 @@
 import { api } from "./client";
-import type { BeaconStatus, BleDevice, BleEvent, HealthResponse, Rule } from "../types/api";
+import type {
+  BeaconStatus,
+  BleDevice,
+  BleEvent,
+  HealthResponse,
+  Rule,
+  RuleTrigger
+} from "../types/api";
 
 export async function getHealth(): Promise<HealthResponse> {
   const response = await api.get<HealthResponse>("/health");
@@ -31,13 +38,21 @@ export async function createRule(payload: {
   return response.data;
 }
 
+export async function patchRule(
+  ruleId: number,
+  payload: Partial<Pick<Rule, "name" | "enabled" | "conditions" | "actions">>
+): Promise<Rule> {
+  const response = await api.patch<Rule>(`/rules/${ruleId}`, payload);
+  return response.data;
+}
+
 export async function getBeaconStatus(): Promise<BeaconStatus> {
   const response = await api.get<BeaconStatus>("/beacon/status");
   return response.data;
 }
 
-export async function startBeacon(): Promise<BeaconStatus> {
-  const response = await api.post<BeaconStatus>("/beacon/start");
+export async function startBeacon(payload: Record<string, unknown> = {}): Promise<BeaconStatus> {
+  const response = await api.post<BeaconStatus>("/beacon/start", { payload });
   return response.data;
 }
 
@@ -46,15 +61,7 @@ export async function stopBeacon(): Promise<BeaconStatus> {
   return response.data;
 }
 
-export async function getRuleTriggers(limit = 100) {
-    const response = await api.get(
-        "/rule-triggers",
-        {
-            params: {
-                limit
-            }
-        }
-    )
-
-    return response.data
+export async function getRuleTriggers(limit = 100): Promise<RuleTrigger[]> {
+  const response = await api.get<RuleTrigger[]>("/rule-triggers", { params: { limit } });
+  return response.data;
 }

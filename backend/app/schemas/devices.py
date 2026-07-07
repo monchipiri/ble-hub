@@ -10,5 +10,6 @@ class DeviceOut(BaseModel):
     notes: str | None
     last_rssi: int | None
     last_seen_at: datetime | None
+    created_at: datetime
 
     model_config = {"from_attributes": True}

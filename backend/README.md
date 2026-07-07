@@ -1,6 +1,6 @@
-# BLE Hub Backend MVP
+# BLE Hub Backend
 
-Backend inicial para escuchar anuncios BLE de wearables, normalizar eventos, evaluar reglas configurables y registrar actividad.
+Backend para escuchar anuncios BLE de wearables, normalizar eventos, evaluar reglas configurables y registrar actividad.
 
 ## Requisitos Raspberry Pi
 
@@ -23,6 +23,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 cp .env.example .env
+```
+
+Por defecto usa SQLite en `blehub.db`. Para PostgreSQL, define:
+
+```env
+DATABASE_URL=postgresql+asyncpg://blehub:blehub_password@localhost:5432/blehub
 ```
 
 ## Ejecutar API

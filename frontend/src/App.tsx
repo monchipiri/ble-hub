@@ -17,8 +17,8 @@ export default function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/rules" element={<RulesPage />} />
         <Route path="/beacon" element={<BeaconPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/triggers" element={<RuleTriggersPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>
   );

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Play, Square } from "lucide-react";
 
 import { getBeaconStatus, startBeacon, stopBeacon } from "../api/bleHubApi";
 import { DataState } from "../components/DataState";
@@ -30,8 +31,14 @@ export function BeaconPage() {
       <DataState isLoading={query.isLoading} error={query.error}>
         <div className="panel">
           <div className="beacon-actions">
-            <button onClick={() => start.mutate()} disabled={start.isPending}>Arrancar baliza</button>
-            <button className="secondary" onClick={() => stop.mutate()} disabled={stop.isPending}>Parar baliza</button>
+            <button onClick={() => start.mutate({})} disabled={start.isPending}>
+              <Play size={18} />
+              Arrancar baliza
+            </button>
+            <button className="secondary" onClick={() => stop.mutate()} disabled={stop.isPending}>
+              <Square size={18} />
+              Parar baliza
+            </button>
           </div>
 
           <JsonBlock value={query.data} />

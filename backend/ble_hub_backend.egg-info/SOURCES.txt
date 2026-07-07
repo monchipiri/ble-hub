@@ -13,6 +13,7 @@ app/api/routes/beacon.py
 app/api/routes/devices.py
 app/api/routes/events.py
 app/api/routes/health.py
+app/api/routes/rule_triggers.py
 app/api/routes/rules.py
 app/ble/__init__.py
 app/ble/advertiser.py
@@ -28,10 +29,12 @@ app/db/models.py
 app/db/session.py
 app/rules/__init__.py
 app/rules/conditions.py
+app/rules/engine.py
 app/schemas/__init__.py
 app/schemas/beacon.py
 app/schemas/devices.py
 app/schemas/events.py
+app/schemas/rule_triggers.py
 app/schemas/rules.py
 app/services/__init__.py
 app/services/activity_service.py

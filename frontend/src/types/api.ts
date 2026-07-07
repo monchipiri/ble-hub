@@ -16,7 +16,7 @@ export type BleDevice = {
 export type BleEvent = {
   id: number;
   source: string;
-  device_address: string;
+  device_address: string | null;
   local_name?: string | null;
   rssi?: number | null;
   service_uuids?: string[] | null;
@@ -44,10 +44,10 @@ export type RuleTrigger = {
   id: number;
   rule_id: number;
   rule_name: string;
-  device_address: string;
-  local_name?: string;
-  rssi?: number;
-  actions: any[];
-  payload: any;
+  device_address: string | null;
+  local_name?: string | null;
+  rssi?: number | null;
+  actions: Array<Record<string, unknown>>;
+  payload: Record<string, unknown>;
   created_at: string;
 };

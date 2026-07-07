@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.models import Rule
-from app.db.session import AsyncSessionLocal
+from app.db.session import get_session
 from app.schemas.rules import RuleCreate, RuleOut, RulePatch
 
 router = APIRouter(prefix="/rules", tags=["rules"])
-
-
-async def get_session():
-    async with AsyncSessionLocal() as session:
-        yield session
 
 
 @router.get("", response_model=list[RuleOut])
