@@ -46,6 +46,10 @@ export async function patchRule(
   return response.data;
 }
 
+export async function deleteRule(ruleId: number): Promise<void> {
+  await api.delete(`/rules/${ruleId}`);
+}
+
 export async function getBeaconStatus(): Promise<BeaconStatus> {
   const response = await api.get<BeaconStatus>("/beacon/status");
   return response.data;

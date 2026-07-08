@@ -1,8 +1,8 @@
 import { FormEvent, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Power, PowerOff } from "lucide-react";
+import { Plus, Power, PowerOff, Trash2 } from "lucide-react";
 
-import { createRule, getRules, patchRule } from "../api/bleHubApi";
+import { createRule, deleteRule, getRules, patchRule } from "../api/bleHubApi";
 import { DataState } from "../components/DataState";
 import { JsonBlock } from "../components/JsonBlock";
 
@@ -15,6 +15,7 @@ export function RulesPage() {
   const [rssiGt, setRssiGt] = useState("-70");
   const [message, setMessage] = useState("Dispositivo detectado cerca");
   const [formError, setFormError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const createMutation = useMutation({
     mutationFn: createRule,
@@ -29,6 +30,17 @@ export function RulesPage() {
       patchRule(ruleId, { enabled }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["rules"] });
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteRule,
+    onSuccess: async () => {
+      setDeleteError(null);
+      await queryClient.invalidateQueries({ queryKey: ["rules"] });
+    },
+    onError: () => {
+      setDeleteError("No se ha podido borrar la regla.");
     }
   });
 
@@ -65,6 +77,15 @@ export function RulesPage() {
         }
       ]
     });
+  }
+
+  function handleDeleteRule(ruleId: number, ruleName: string) {
+    const confirmed = window.confirm(`Borrar la regla "${ruleName}"?`);
+    if (!confirmed) {
+      return;
+    }
+
+    deleteMutation.mutate(ruleId);
   }
 
   return (
@@ -114,6 +135,7 @@ export function RulesPage() {
         </form>
 
         <div>
+          {deleteError ? <div className="state-card error inline-error">{deleteError}</div> : null}
           <DataState isLoading={query.isLoading} error={query.error} empty={!query.data?.length}>
             <div className="cards-list">
               {query.data?.map((rule) => (
@@ -137,6 +159,15 @@ export function RulesPage() {
                         disabled={toggleMutation.isPending}
                       >
                         {rule.enabled ? <PowerOff size={18} /> : <Power size={18} />}
+                      </button>
+                      <button
+                        className="icon-button danger"
+                        type="button"
+                        title="Borrar regla"
+                        onClick={() => handleDeleteRule(rule.id, rule.name)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </header>

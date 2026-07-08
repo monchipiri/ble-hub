@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -34,3 +34,14 @@ async def patch_rule(rule_id: int, payload: RulePatch, session: AsyncSession = D
     await session.commit()
     await session.refresh(rule)
     return rule
+
+
+@router.delete("/{rule_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_rule(rule_id: int, session: AsyncSession = Depends(get_session)):
+    rule = await session.get(Rule, rule_id)
+    if not rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+
+    await session.delete(rule)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
